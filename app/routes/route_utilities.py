@@ -41,23 +41,21 @@ def validate_by_email(cls, email):
     
 
 def create_model(cls, model_data):
-    if "email" in model_data:
-        existing = db.session.scalar(
-            db.select(cls).where(cls.email == model_data["email"])
-        )
-
-        if existing:
-            response = {"message": f"An account with email '{model_data['email']}' already exists."}
-            abort(make_response(response, 409))
-
+    
     try:
         new_model = cls.from_dict(model_data)
+        db.session.add(new_model)
+        db.session.commit()  
     except Exception as e:
-        response = {"message": f"Invalid request: missing {e.args[0]}"}
-        abort(make_response(response, 400))
+        db.session.rollback()
 
-    db.session.add(new_model)
-    db.session.commit()
+        if isinstance(e, KeyError):
+          response = {"message": f"Invalid: Missing key ({e.args[0]})"}, 400
+        else: 
+          response = {"message": f"An account with email ({model_data['email']}) already exists."}, 409
+        
+        abort(make_response(response))
+
 
     return new_model.to_dict(), 201
 
