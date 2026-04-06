@@ -171,3 +171,4 @@ def test_delete_user_not_found_returns_404(client):
 def test_delete_user_invalid_id_returns_400(client):
     response = client.delete("/users/abc")
     assert response.status_code == 400
+    assert "invalid" in response.get_json()["message"]
