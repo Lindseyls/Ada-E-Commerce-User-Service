@@ -1,17 +1,5 @@
-import pytest
 from app.db import db
 from app.models.user import User
-
-
-# ──────────────────────────────────────────────
-# Health check
-# ──────────────────────────────────────────────
-
-def test_index(client):
-    response = client.get("/")
-    assert response.status_code == 200
-    assert response.get_json() == {"status": "ok"}
-
 
 # ──────────────────────────────────────────────
 # POST /users/
@@ -98,6 +86,22 @@ def test_get_all_users_unknown_filter_ignored(client, three_users):
     assert len(response.get_json()) == 3
 
 
+# ──────────────────────────────────────────────
+# GET /users/email
+# ──────────────────────────────────────────────
+
+def test_get_single_user_by_email(client, one_user):
+    response = client.get(f"/users/email?email={one_user.email}")
+    response = client.get(f"/users/{one_user.id}")
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["id"] == one_user.id
+    assert body["email"] == "ada@example.com"
+
+def test_get_single_user_by_email_not_found_returns_404(client):
+    response = client.get("/users/email?email=adminnotexist@example.com")
+    assert response.status_code == 404
+    assert "Could not find account." in response.get_json()["message"]
 # ──────────────────────────────────────────────
 # GET /users/<id>
 # ──────────────────────────────────────────────

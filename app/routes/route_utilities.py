@@ -1,4 +1,5 @@
 from ..db import db
+from ..models.user import User
 from flask import abort, make_response, Response
 
 def validate_model(cls, id):
@@ -10,17 +11,40 @@ def validate_model(cls, id):
 
     query = db.select(cls).where(cls.id == id)
     model = db.session.scalar(query)
+
     if not model:    
         not_found = {"message": f"{cls.__name__} with id ({id}) not found."}
         abort(make_response(not_found, 404))
 
     return model
 
+def get_user_by_email(email):
+    try:
+        user = db.session.scalar(
+            db.select(User).where(User.email == email)
+        )
+    except:
+        abort(make_response({"message": "Somethting went wrong"}, 500))
+    
+    if not user:
+        abort(make_response({"message": "Could not find account."}, 404))
+
+    return user.to_dict()
+
+def validate_by_email(cls, email):
+  user = db.select(cls).where(cls.email == email)
+
+  if user:
+      return user 
+  
+  abort(make_response({"message": f"Could not find account"}))
+    
+
 def create_model(cls, model_data):
     if "email" in model_data:
-        existing = db.session.execute(
+        existing = db.session.scalar(
             db.select(cls).where(cls.email == model_data["email"])
-        ).scalar()
+        )
 
         if existing:
             response = {"message": f"An account with email '{model_data['email']}' already exists."}

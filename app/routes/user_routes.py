@@ -1,7 +1,7 @@
 from ..db import db
 from ..models.user import User
 from flask import Blueprint, request, Response
-from .route_utilities import create_model, get_models_with_filters, validate_model, update_model
+from .route_utilities import create_model, get_models_with_filters, validate_model, update_model, get_user_by_email
 
 bp = Blueprint("users_blueprint", __name__, url_prefix="/users")
 
@@ -20,6 +20,12 @@ def get_single_user(id):
   user = validate_model(User, id)
 
   return user.to_dict()
+
+@bp.get("/email")
+def get_single_user_by_email():
+  email = request.args.get("email")
+
+  return get_user_by_email(email)
 
 @bp.put("/<id>")
 def update_user(id):
