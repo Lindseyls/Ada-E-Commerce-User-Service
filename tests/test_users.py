@@ -37,6 +37,7 @@ def test_create_user_missing_required_field_returns_400(client):
         "email": "ada@example.com",
     })
     assert response.status_code == 400
+assert "Invalid request" in response.get_json()["message"]
 
 
 def test_create_user_duplicate_email_returns_409(client, one_user):
