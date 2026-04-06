@@ -37,7 +37,7 @@ def test_create_user_missing_required_field_returns_400(client):
         "email": "ada@example.com",
     })
     assert response.status_code == 400
-assert "Invalid request" in response.get_json()["message"]
+    assert "Invalid request" in response.get_json()["message"]
 
 
 def test_create_user_duplicate_email_returns_409(client, one_user):
@@ -144,7 +144,7 @@ def test_update_user_ignores_unknown_fields(client, one_user):
 def test_update_user_not_found_returns_404(client):
     response = client.put("/users/999", json={"first_name": "Nobody"})
     assert response.status_code == 404
-assert "not found" in response.get_json()["message"]
+    assert "not found" in response.get_json()["message"]
 
 
 def test_update_user_invalid_id_returns_400(client):
