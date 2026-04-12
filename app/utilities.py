@@ -1,21 +1,18 @@
-from ..db import db
-from ..models.user import User
-from flask import abort, make_response, Response
+from .db import db
+from .models.user import User
 
 
 def validate_model(cls, id):
     try:
         id = int(id)
     except ValueError:
-        invalid = {"message": f"{cls.__name__} id ({id}) is invalid."}
-        abort(make_response(invalid, 400))
+        raise ValueError(f"{cls.__name__} id ({id}) is invalid.")
 
     query = db.select(cls).where(cls.id == id)
     model = db.session.scalar(query)
 
     if not model:
-        not_found = {"message": f"{cls.__name__} with id ({id}) not found."}
-        abort(make_response(not_found, 404))
+        raise LookupError(f"{cls.__name__} with id ({id}) not found.")
 
     return model
 
@@ -25,13 +22,13 @@ def get_user_by_email(email):
         user = db.session.scalar(
             db.select(User).where(User.email == email)
         )
-    except:
-        abort(make_response({"message": "Somethting went wrong"}, 500))
+    except Exception:
+        raise RuntimeError("Something went wrong")
 
     if not user:
-        abort(make_response({"message": "Could not find account."}, 404))
+        raise LookupError("Could not find account.")
 
-    return user.to_dict()
+    return user
 
 
 def validate_by_email(cls, email):
@@ -40,27 +37,19 @@ def validate_by_email(cls, email):
     if user:
         return user
 
-    abort(make_response({"message": f"Could not find account"}))
+    raise LookupError("Could not find account.")
 
 
 def create_model(cls, model_data):
-
     try:
         new_model = cls.from_dict(model_data)
         db.session.add(new_model)
         db.session.commit()
     except Exception as e:
         db.session.rollback()
+        raise e
 
-        if isinstance(e, KeyError):
-            response = {"message": f"Invalid: Missing key ({e.args[0]})"}, 400
-        else:
-            response = {
-                "message": f"An account with email ({model_data['email']}) already exists."}, 409
-
-        abort(make_response(response))
-
-    return new_model.to_dict(), 201
+    return new_model
 
 
 def get_models_with_filters(cls, filters=None):
@@ -83,5 +72,3 @@ def update_model(obj, data):
             setattr(obj, attr, value)
 
     db.session.commit()
-
-    return Response(status=204, mimetype="application/json")
