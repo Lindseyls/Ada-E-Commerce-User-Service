@@ -48,11 +48,5 @@ def create_app(config=None):
         return {
             "status": "ok"
         }
-    
-    @app.get('/health')
-    def health():
-        return {
-        "status": "healthy"
-        }
 
     return app

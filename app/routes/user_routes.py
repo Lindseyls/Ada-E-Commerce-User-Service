@@ -79,3 +79,9 @@ def delete_user(id):
     db.session.commit()
 
     return Response(status=204, mimetype="application/json")
+
+@bp.get('/health')
+def health():
+    return {
+    "status": "healthy"
+    }
