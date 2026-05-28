@@ -4,9 +4,12 @@ import boto3
 import pytest
 from app.db import db
 from app import create_app
+from dotenv import load_dotenv
 from app.models.user import User
 from flask.signals import request_finished
 from moto import mock_aws
+
+load_dotenv()
 
 QUEUE_NAME = "test-orders.fifo"
 
