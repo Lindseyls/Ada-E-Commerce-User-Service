@@ -1,5 +1,7 @@
 # User Service
 
+# User Service
+
 ## Description
 
 The User Service is one of 3 microservices for the Ada Developers Academy Cloud Curriculum e-commerce application. It handles the creation and management of user accounts in the e-commerce system.
@@ -54,6 +56,7 @@ Create a `.env` file in the project root:
 ```
 SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://postgres:postgres@localhost:5432/user_service_db
 SQLALCHEMY_TEST_DATABASE_URI=postgresql+psycopg2://postgres:postgres@localhost:5432/user_service_test_db
+QUEUE_URL=<your-sqs-queue-url>
 ```
 
 ### 5. Create the database
@@ -76,6 +79,12 @@ flask db upgrade
 
 ```bash
 flask run --debug
+```
+
+## Running the SQS Consumer
+
+```bash
+python -m app.consumers.consumer
 ```
 
 ## Running Tests
