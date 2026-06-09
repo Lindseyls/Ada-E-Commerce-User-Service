@@ -34,7 +34,6 @@ def send_event(queue, event_type, payload):
 # ──────────────────────────────────────────────
 # process_message
 # ──────────────────────────────────────────────
-@pytest.mark.skip
 def test_process_message_order_placed_returns_true(one_user, sample_order, sqs_queue):
     send_order(sqs_queue, sample_order)
     messages = sqs_queue.receive_messages(MaxNumberOfMessages=1)
@@ -43,7 +42,6 @@ def test_process_message_order_placed_returns_true(one_user, sample_order, sqs_q
 
     assert result is True
 
-@pytest.mark.skip
 def test_process_message_order_placed_prints_confirmation(one_user, sample_order, sqs_queue, capsys):
     send_order(sqs_queue, sample_order)
     messages = sqs_queue.receive_messages(MaxNumberOfMessages=1)
@@ -55,7 +53,6 @@ def test_process_message_order_placed_prints_confirmation(one_user, sample_order
     assert one_user.email in output
     assert str(sample_order["id"]) in output
 
-@pytest.mark.skip
 def test_process_message_unknown_event_type_returns_true(one_user, sample_order, sqs_queue):
     send_event(sqs_queue, "order.cancelled", sample_order)
     messages = sqs_queue.receive_messages(MaxNumberOfMessages=1)
@@ -64,7 +61,6 @@ def test_process_message_unknown_event_type_returns_true(one_user, sample_order,
 
     assert result is True
 
-@pytest.mark.skip
 def test_process_message_unknown_event_type_skips_confirmation(one_user, sample_order, sqs_queue, capsys):
     send_event(sqs_queue, "order.cancelled", sample_order)
     messages = sqs_queue.receive_messages(MaxNumberOfMessages=1)
@@ -74,7 +70,6 @@ def test_process_message_unknown_event_type_skips_confirmation(one_user, sample_
     output = capsys.readouterr().out
     assert output == ""
 
-@pytest.mark.skip
 def test_processed_message_can_be_deleted_from_sqs(one_user, sample_order, sqs_queue):
     send_order(sqs_queue, sample_order)
     messages = sqs_queue.receive_messages(MaxNumberOfMessages=1)
