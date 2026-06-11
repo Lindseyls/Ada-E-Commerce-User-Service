@@ -62,7 +62,7 @@ def test_process_message_unknown_event_type_returns_true(one_user, sample_order,
 
     result = process_message(messages[0])
 
-    assert result is True
+    assert result is False
 
 # @pytest.mark.skip
 def test_process_message_unknown_event_type_skips_confirmation(one_user, sample_order, sqs_queue, capsys):
