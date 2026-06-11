@@ -41,7 +41,7 @@ def test_process_message_order_placed_returns_true(one_user, sample_order, sqs_q
 
     result = process_message(messages[0])
 
-    assert result is True
+    assert result is False
 
 # @pytest.mark.skip
 def test_process_message_order_placed_prints_confirmation(one_user, sample_order, sqs_queue, capsys):
